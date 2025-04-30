@@ -1,6 +1,6 @@
 <h1>ExpNo 5 : Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game</h1> 
-<h3>Name:           </h3>
-<h3>Register Number/Staff Id:          </h3>
+<h3>Name: M.Suryakumar </h3>
+<h3>Register Number: 212224040340         </h3>
 <H3>Aim:</H3>
 <p>
     Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game
@@ -101,8 +101,168 @@ def minimax(game)
         return scores[min_score_index]
     end
 end
-
+```
+```
 <hr>
+Program:
+import time
+```
+
+    class Game:
+        def __init__(self):
+            self.initialize_game()
+
+    def initialize_game(self):
+        self.current_state = [['.', '.', '.'], ['.', '.', '.'], ['.', '.', '.']]
+        self.player_turn = 'X'  # X always starts
+
+    def draw_board(self):
+        print("Current board:")
+        for row in self.current_state:
+            print(" | ".join(row))
+        print()
+
+    def is_valid(self, px, py):
+        return 0 <= px < 3 and 0 <= py < 3 and self.current_state[px][py] == '.'
+
+    def is_end(self):
+        # Vertical
+        for i in range(3):
+            if (self.current_state[0][i] != '.' and
+                self.current_state[0][i] == self.current_state[1][i] and
+                self.current_state[1][i] == self.current_state[2][i]):
+                return self.current_state[0][i]
+
+        # Horizontal
+        for i in range(3):
+            if (self.current_state[i][0] != '.' and
+                self.current_state[i][0] == self.current_state[i][1] and
+                self.current_state[i][1] == self.current_state[i][2]):
+                return self.current_state[i][0]
+
+        # Diagonals
+        if (self.current_state[0][0] != '.' and
+            self.current_state[0][0] == self.current_state[1][1] and
+            self.current_state[0][0] == self.current_state[2][2]):
+            return self.current_state[0][0]
+
+        if (self.current_state[0][2] != '.' and
+            self.current_state[0][2] == self.current_state[1][1] and
+            self.current_state[0][2] == self.current_state[2][0]):
+            return self.current_state[0][2]
+
+        # Check for tie
+        for row in self.current_state:
+            if '.' in row:
+                return None  # Game still going
+
+        return '.'  # It's a tie
+
+    def max(self):
+        maxv = -2
+        px = None
+        py = None
+
+        result = self.is_end()
+        if result == 'X':
+            return (-1, 0, 0)
+        elif result == 'O':
+            return (1, 0, 0)
+        elif result == '.':
+            return (0, 0, 0)
+
+        for i in range(3):
+            for j in range(3):
+                if self.current_state[i][j] == '.':
+                    self.current_state[i][j] = 'O'
+                    (m, _, _) = self.min()
+                    if m > maxv:
+                        maxv = m
+                        px = i
+                        py = j
+                    self.current_state[i][j] = '.'
+
+        return (maxv, px, py)
+
+    def min(self):
+        minv = 2
+        qx = None
+        qy = None
+
+        result = self.is_end()
+        if result == 'X':
+            return (-1, 0, 0)
+        elif result == 'O':
+            return (1, 0, 0)
+        elif result == '.':
+            return (0, 0, 0)
+
+        for i in range(3):
+            for j in range(3):
+                if self.current_state[i][j] == '.':
+                    self.current_state[i][j] = 'X'
+                    (m, _, _) = self.max()
+                    if m < minv:
+                        minv = m
+                        qx = i
+                        qy = j
+                    self.current_state[i][j] = '.'
+
+        return (minv, qx, qy)
+
+    def play(self):
+        while True:
+            self.draw_board()
+            result = self.is_end()
+
+            if result is not None:
+                if result == 'X':
+                    print("The winner is X!")
+                elif result == 'O':
+                    print("The winner is O!")
+                else:
+                    print("It's a tie!")
+                
+                replay = input("Do you want to play again? (y/n): ").strip().lower()
+                if replay == 'y':
+                    self.initialize_game()
+                    continue
+                else:
+                    print("Thanks for playing!")
+                    break
+
+            if self.player_turn == 'X':
+                while True:
+                    try:
+                        px = int(input("Enter your move X (row 0-2): "))
+                        py = int(input("Enter your move Y (col 0-2): "))
+                        if self.is_valid(px, py):
+                            self.current_state[px][py] = 'X'
+                            self.player_turn = 'O'
+                            break
+                        else:
+                            print("Invalid move! Try again.")
+                    except ValueError:
+                        print("Please enter valid integers between 0 and 2.")
+            else:
+                print("AI is thinking...")
+                start = time.time()
+                (_, px, py) = self.max()
+                end = time.time()
+                print("AI played at: ({}, {}) in {}s".format(px, py, round(end - start, 4)))
+                self.current_state[px][py] = 'O'
+                self.player_turn = 'X'
+```
+def main():
+    game = Game()
+    game.play()
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
 <h2>Sample Input and Output</h2>
 
 ![image](https://github.com/natsaravanan/19AI405FUNDAMENTALSOFARTIFICIALINTELLIGENCE/assets/87870499/6b668685-8bcc-43c5-b5c2-ddd43f3da84a)
@@ -112,5 +272,8 @@ end
 ![image](https://github.com/natsaravanan/19AI405FUNDAMENTALSOFARTIFICIALINTELLIGENCE/assets/87870499/a2acb6a1-ed8e-42e5-8968-fe805e4b0255)
 
 <hr>
+Output:
+![image](https://github.com/user-attachments/assets/4ffb68e7-9c4f-4fa2-8299-ba1b56bf7125)
+
 <h2>Result:</h2>
 <p>Thus,Implementation of  Minimax Search Algorithm for a Simple TIC-TAC-TOE game wasa done successfully.</p>
